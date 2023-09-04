@@ -9,7 +9,7 @@ const Component = styled(Box)`
   width: 400px;
   margin: auto;
   box-shadow: 5px 2px 5px 2px rgb(0 0 0/0.6);
-  margin-top:64px
+  margin-top: 64px;
 `;
 
 const Image = styled("img")({
@@ -73,8 +73,8 @@ function Login() {
   const [account, toggleAccount] = useState("login");
   const [signup, setSignup] = useState(signupInitialValue);
   const [login, setLogin] = useState(loginInitialValue);
-  const { setUserAccount,setAuth } = useContext(DataContext);
-  const navigate=useNavigate();
+  const { setUserAccount, setAuth } = useContext(DataContext);
+  const navigate = useNavigate();
 
   const toggleSignup = () => {
     account === "signup" ? toggleAccount("login") : toggleAccount("signup");
@@ -105,13 +105,12 @@ function Login() {
       sessionStorage.setItem("accessToken", `Bearer ${data.accessToken}`);
       sessionStorage.setItem("refreshToken", `Bearer ${data.refreshToken}`);
       setUserAccount({ name: data.user.name, username: data.user.username });
-      setAuth(true)
+      setAuth(true);
       navigate("/");
       setLogin(signupInitialValue);
     } catch (error) {
       console.log("error:", error);
     }
-
   };
 
   return (
