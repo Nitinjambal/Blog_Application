@@ -8,9 +8,10 @@ import {
   styled,
 } from "@mui/material";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { DataContext } from "../../context/DataProvider";
 import axios from "axios";
+import { getAccessToken } from "../../utils/commenUtils";
 
 const Container = styled(Box)`
   margin: 20px 100px;
@@ -53,18 +54,18 @@ const initalPost = {
   createdDate: new Date(),
 };
 
-const API_URL = "http://localhost:3000/api/v1/users";
+const API_URL = "http://localhost:3000/api/v1";
 
 function CreatePost() {
   const [post, setPost] = useState(initalPost);
-  const url = post.picture
-    ? post.picture
-    : "https://images.unsplash.com/photo-1543128639-4cb7e6eeef1b?ixid=MnwxMjA3fDB8MHxzZWFyY2h8Mnx8bGFwdG9wJTIwc2V0dXB8ZW58MHx8MHx8&ixlib=rb-1.2.1&w=1000&q=80";
-
   const [file, setFile] = useState("");
   const location = useLocation();
   const { userAccount } = useContext(DataContext);
-  console.log("userAccount:", userAccount);
+  const navigate=useNavigate()
+
+  const url = post.picture
+    ? post.picture
+    : "https://images.unsplash.com/photo-1543128639-4cb7e6eeef1b?ixid=MnwxMjA3fDB8MHxzZWFyY2h8Mnx8bGFwdG9wJTIwc2V0dXB8ZW58MHx8MHx8&ixlib=rb-1.2.1&w=1000&q=80";
 
   useEffect(() => {
     const getImage = async () => {
@@ -73,20 +74,44 @@ function CreatePost() {
         data.append("name", file.name);
         data.append("file", file);
 
-        const response = await axios.post(`${API_URL}/file/upload`, data);
-        console.log("res:", response);
-        post.picture = response.data;
+        try {
+          const response = await axios.post(
+            `${API_URL}/users/file/upload`,
+            data,{
+
+            }
+          );
+          // console.log("res:", response);
+          setPost({
+            ...post,
+            picture: response.data,
+            categories: location.search?.split("=")[1] || "All",
+            username: userAccount.username,
+          });
+        } catch (error) {
+          console.error("Error uploading image:", error);
+        }
       }
     };
     getImage();
-    post.categories = location.search?.split("=")[1] || "All";
-    post.username = userAccount.username;
-  }, [file]);
+  }, [file, location.search, userAccount.username]);
 
   const handleChange = (e) => {
     setPost({ ...post, [e.target.name]: e.target.value });
   };
 
+  const savePost = async () => {
+    try {
+      const response = await axios.post(`${API_URL}/posts/create`, post,{
+        headers: {
+                authorization: getAccessToken()
+            }
+      });
+     navigate("/")
+    } catch (error) {
+      console.log("error:", error);
+    }
+  };
   return (
     <Container>
       <Image src={url} alt="postBanner" />
@@ -105,7 +130,9 @@ function CreatePost() {
           onChange={(e) => handleChange(e)}
           placeholder="Title"
         />
-        <Button variant="contained">Publish</Button>
+        <Button variant="contained" onClick={savePost}>
+          Publish
+        </Button>
       </StyledFormControl>
       <TextArea
         name="description"

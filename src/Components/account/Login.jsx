@@ -91,7 +91,7 @@ function Login() {
   const SignupUser = async () => {
     try {
       const { data } = await axios.post(`${API_URL}/signup`, signup);
-      console.log("data:", data);
+      // console.log("data:", data);
       setSignup(signupInitialValue);
     } catch (error) {
       console.log("error:", error);

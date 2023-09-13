@@ -9,9 +9,11 @@ const userDetail = {
 
 const DataContextProvider = ({ children }) => {
   const [userAccount, setUserAccount] = useState(userDetail);
-  const [isAuth,setAuth]=useState(false);
+  const [isAuth, setAuth] = useState(false);
   return (
-    <DataContext.Provider value={{userAccount,setUserAccount,isAuth,setAuth }}>
+    <DataContext.Provider
+      value={{ userAccount, setUserAccount, isAuth, setAuth }}
+    >
       {children}
     </DataContext.Provider>
   );
